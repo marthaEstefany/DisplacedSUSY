@@ -5,6 +5,7 @@ import re
 import math
 from array import array
 from optparse import OptionParser
+from DisplacedSUSY.Configuration.helperFunctions import propagateError
 from ROOT import TFile, TCanvas, gPad, gROOT, TH1, TGraphAsymmErrors, TMultiGraph, TLegend, Double
 
 parser = OptionParser()
@@ -20,20 +21,6 @@ if arguments.localConfig:
     exec("from " + re.sub (r".py$", r"", arguments.localConfig) + " import *")
 
 gROOT.SetBatch()
-
-# copypasta from fitSidebands
-def propagateError(func, a, a_err, b, b_err):
-    a = float(a)
-    b = float(b)
-    if func is "sum":
-        return (a + b, math.sqrt(a_err**2 + b_err**2))
-    elif func is "product":
-        return (a*b, a*b * math.sqrt((a_err/a)**2 + (b_err/b)**2))
-    elif func is "quotient":
-        return (a/b, a/b * math.sqrt((a_err/a)**2 + (b_err/b)**2))
-    else:
-        print "Unrecognized function"
-        return -1
 
 out_file = TFile(output_file_name, "recreate")
 
@@ -67,13 +54,15 @@ for plot in plots:
         eff_plot.GetPoint(eff_plot.GetN()-1, x, y)
         y_err = eff_plot.GetErrorY(eff_plot.GetN()-1)
         eff_and_err[pair["type"]] = {"eff" : y, "err" : y_err}
-
+	
+        # eff_plot.Fit("pol1","","",65,500)
         combined_plot.Add(eff_plot)
         legend.AddEntry(eff_plot, pair["label"])
 
     (sf, sf_err) = propagateError("quotient", eff_and_err['data']["eff"], eff_and_err['data']["err"],
                                               eff_and_err['mc']["eff"], eff_and_err['mc']["err"])
-    print plot["channel"], sf, sf_err
+    print plot["channel"], "-- scaleFactor: ", sf, "-- scaleFactorError: ", sf_err
+
 
     canvas = TCanvas(plot["channel"], plot["channel"], 700, 700)
     combined_plot.Draw("ALP")
@@ -87,4 +76,3 @@ for plot in plots:
 
 in_file.Close()
 out_file.Close()
-

@@ -14,6 +14,8 @@ muon_pt_20_cut.numberRequired = cms.string(">= 2")
 
 muon_pt_25_cut.numberRequired = cms.string(">= 2")
 
+muon_pt_30_cut.numberRequired = cms.string(">= 2")
+
 muon_pt_40_cut.numberRequired = cms.string(">= 2")
 
 muon_pt_70_cut.numberRequired = cms.string(">= 2")
@@ -30,24 +32,30 @@ muon_iso_cut.alias = cms.string(">=2 muons with tight isolation")
 muon_antiiso_cut.numberRequired = cms.string(">= 2")
 muon_antiiso_cut.alias = cms.string(">=2 muons with inverted tight isolation")
 
+muon_d0_lessThan10_cut.numberRequired = cms.string(">= 2")
+muon_d0_lessThan10_cut.alias = cms.string(">=2 muons with |d_0| < 10 mum")
+
 muon_d0_lessThan100_cut.numberRequired = cms.string(">= 2")
-muon_d0_lessThan100_cut.alias = cms.string(">=2 muons with d0 < 100 mum")
+muon_d0_lessThan100_cut.alias = cms.string(">=2 muons with |d_0| < 100 mum")
 
 muon_d0_100to200_cut.numberRequired = cms.string(">= 2")
-muon_d0_100to200_cut.alias = cms.string(">=2 muons with 100 < d0 < 200 mum")
+muon_d0_100to200_cut.alias = cms.string(">=2 muons with 100 < |d_0| < 200 mum")
 
 muon_d0_greaterThan100_cut.numberRequired = cms.string(">= 2")
-muon_d0_greaterThan100_cut.alias = cms.string(">=2 muons with d0 > 100 mum")
+muon_d0_greaterThan100_cut.alias = cms.string(">=2 muons with |d_0| > 100 mum")
 
 muon_d0_lessThan200_cut.numberRequired = cms.string(">= 2")
-muon_d0_lessThan200_cut.alias = cms.string(">=2 muons with d0 < 200 mum")
+muon_d0_lessThan200_cut.alias = cms.string(">=2 muons with |d_0| < 200 mum")
 
 muon_d0_lessThan2000_cut.numberRequired = cms.string(">= 2")
-muon_d0_lessThan2000_cut.alias = cms.string(">=2 muons with d0 < 0.2 cm")
+muon_d0_lessThan2000_cut.alias = cms.string(">=2 muons with |d_0| < 0.2 cm")
 
 #dZ cut
 muon_dZ_lessThan5000_cut.numberRequired = cms.string(">= 2")
 muon_dZ_lessThan5000_cut.alias = cms.string(">=2 muons with dZ < 0.5 cm")
+
+muon_gen_motherIsW_cut.numberRequired = cms.string(">= 2")
+muon_gen_motherIsW_cut.alias = cms.string(">=2 muons from W (muon matched to gen particle whose mother has PDG ID of 24)")
 
 muon_fiducial_phi_cut = cms.PSet(
     inputCollection = cms.vstring("muons"),
@@ -94,7 +102,7 @@ diMuon_deltaR_cut = cms.PSet (
     inputCollection = cms.vstring("muons", "muons"),
     cutString = cms.string("deltaR(muon, muon) > 0.5"),
     numberRequired = cms.string(">= 1"),
-    alias = cms.string(">=1 well-seperated mu-mu pair")
+    alias = cms.string(">=1 well-seperated mu-mu pair (#DeltaR > 0.5)")
     )
 
 ##########################################################################

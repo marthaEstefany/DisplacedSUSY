@@ -38,8 +38,8 @@ scalingfactorproducers = []
 ##### Attach the channels and histograms to the process ########################
 ################################################################################
 
-add_channels (process, eventSelections, histograms, weights, scalingfactorproducers, collectionMap, variableProducers, True)
+add_channels (process, eventSelections, histograms, weights, scalingfactorproducers, collectionMap, variableProducers)
 
 # customize the process:
-# usage: customize(process, applyPUReweighting = True, applyTriggerReweighting = True) 
-customize (process, False, False, "data")
+# usage: customize(process, analysisChannel = "mumu", applyPUReweighting = True, applyTriggerReweighting = True)
+customize (process, "mumu", False, False, "data")

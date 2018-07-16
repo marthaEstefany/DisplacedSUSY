@@ -31,20 +31,22 @@ process.MessageLogger.cerr.osu_GenMatchable = cms.untracked.PSet(
 ##### max number of events (when run interactively) ############################
 ################################################################################
 
-if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+if os.environ["CMSSW_VERSION"].startswith("CMSSW_8_0_"):
     process.source = cms.Source ('PoolSource',
       fileNames = cms.untracked.vstring (
-            '/store/data/Run2016G/MuonEG/MINIAOD/23Sep2016-v1/100000/005AB7E9-0B93-E611-AC81-848F69FD2925.root'
-            #'/store/data/Run2016G/DoubleEG/MINIAOD/23Sep2016-v1/100000/0608426D-3F8E-E611-A52D-00237DF28460.root'
-            #'/store/data/Run2016G/DoubleMuon/MINIAOD/23Sep2016-v1/100000/00993A51-DF90-E611-A4EE-7845C4FC3650.root'
+            #'/store/data/Run2016G/MuonEG/MINIAOD/07Aug17-v1/10000/04360562-9C92-E711-A8A3-4C79BA180B5D.root'
+            #'/store/data/Run2016G/DoubleEG/MINIAOD/07Aug17-v1/00000/1EF72C1E-DFB3-E711-A459-0242AC110005.root'
+            #'/store/data/Run2016G/DoubleMuon/MINIAOD/07Aug17-v1/10000/00448C94-C19A-E711-BC4C-A4BF01125660.root'
+            '/store/mc/RunIISummer16MiniAODv2/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/04F61242-90BA-E611-B842-001E67DFF7CB.root'
       )
     )
-elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
+elif os.environ["CMSSW_VERSION"].startswith("CMSSW_9_4_"):
     process.source = cms.Source ('PoolSource',
       fileNames = cms.untracked.vstring (
-            '/store/data/Run2017D/MuonEG/MINIAOD/17Nov2017-v1/50000/0C144772-16E5-E711-B272-001E673971CA.root'
-            #'/store/data/Run2017D/DoubleMuon/MINIAOD/17Nov2017-v1/20000/0287B2B9-B7D2-E711-9994-0025905C542C.root'
-            #'/store/data/Run2017D/DoubleEG/MINIAOD/17Nov2017-v1/30000/007FE641-E7D7-E711-8291-0025905C53D0.root'
+            '/store/data/Run2017D/MuonEG/MINIAOD/31Mar2018-v1/100000/CC4BAF57-C437-E811-81E1-B496910A9A9C.root'
+            #'/store/data/Run2017D/DoubleMuon/MINIAOD/31Mar2018-v1/100000/00915A1A-C937-E811-B03A-009C02AAB484.root'
+            #'/store/data/Run2017D/DoubleEG/MINIAOD/31Mar2018-v1/00000/002F7CD1-9D37-E811-A03E-B499BAABCF1A.root'
+            #'/store/mc/RunIIFall17MiniAODv2/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/10000/143D9394-AF60-E811-96DC-0025904C641E.root'
       )
     )
 else:
@@ -60,17 +62,19 @@ process.maxEvents = cms.untracked.PSet (
     input = cms.untracked.int32 (100)
 )
 
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+
 ################################################################################
 ##### Set up the global tags ###################################################
 ################################################################################
 
 #from https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions
 if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
-    data_global_tag = '80X_dataRun2_2016SeptRepro_v6'
+    data_global_tag = '80X_dataRun2_2016LegacyRepro_v4'
     mc_global_tag = '80X_mcRun2_asymptotic_2016_TrancheIV_v8'
 elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
-    data_global_tag = '94X_dataRun2_ReReco_EOY17_v2'
-    mc_global_tag = '94X_mc2017_realistic_v12'
+    data_global_tag = '94X_dataRun2_v6'
+    mc_global_tag = '94X_mc2017_realistic_v14'
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag

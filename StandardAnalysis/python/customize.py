@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 import math
 import os
 
-def customize (process, applyPUReweighting = True, applyTriggerReweighting = True, sampleType = "bgMC"):
+def customize (process, analysisChannel = "emu", applyPUReweighting = True, applyTriggerReweighting = True, sampleType = "bgMC"):
 
 ################################################################################
 ##### Set variables needed for DisplacedSUSYEventVariableProducer ##############
@@ -11,7 +11,10 @@ def customize (process, applyPUReweighting = True, applyTriggerReweighting = Tru
 
     if hasattr(process, "DisplacedSUSYEventVariableProducer"):
         process.DisplacedSUSYEventVariableProducer.type = cms.string(sampleType)
-        process.DisplacedSUSYEventVariableProducer.triggerPath = cms.string("HLT_MET200_v")
+        if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+            process.DisplacedSUSYEventVariableProducer.triggerPath = cms.string("HLT_MET200_v")
+        elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
+            process.DisplacedSUSYEventVariableProducer.triggerPath = cms.string("HLT_PFMET200_HBHECleaned")
         process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(1.0)
 
 ################################################################################
@@ -19,21 +22,26 @@ def customize (process, applyPUReweighting = True, applyTriggerReweighting = Tru
 ################################################################################
 
     if applyPUReweighting:
-        process.PUScalingFactorProducer.dataset = cms.string("TTJets_DiLept") # default value, only used when running interactively
+        process.PUScalingFactorProducer.dataset = cms.string("SingleTop_tW") # default value, only used when running interactively
         process.PUScalingFactorProducer.type = cms.string(sampleType)
 
         if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+            process.PUScalingFactorProducer.PU = cms.string(os.environ['CMSSW_BASE'] + '/src/DisplacedSUSY/StandardAnalysis/data/pu2016.root')
             process.PUScalingFactorProducer.target = cms.string ("data2016_GH")
             process.PUScalingFactorProducer.targetUp = cms.string ("data2016_GHUp")
             process.PUScalingFactorProducer.targetDown = cms.string ("data2016_GHDown")
-            process.PUScalingFactorProducer.PU = cms.string(os.environ['CMSSW_BASE'] + '/src/DisplacedSUSY/StandardAnalysis/data/pu2016.root')
 
-#FIXME: need to update for 2017
         elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
-            process.PUScalingFactorProducer.target = cms.string ("data2016_GH")
-            process.PUScalingFactorProducer.targetUp = cms.string ("data2016_GHUp")
-            process.PUScalingFactorProducer.targetDown = cms.string ("data2016_GHDown")
-            process.PUScalingFactorProducer.PU = cms.string(os.environ['CMSSW_BASE'] + '/src/DisplacedSUSY/StandardAnalysis/data/pu2016.root')
+            process.PUScalingFactorProducer.PU = cms.string(os.environ['CMSSW_BASE'] + '/src/DisplacedSUSY/StandardAnalysis/data/pu2017.root')
+            if analysisChannel=="emu" or analysisChannel=="mumu":
+                process.PUScalingFactorProducer.target = cms.string ("data2017_CDEF")
+                process.PUScalingFactorProducer.targetUp = cms.string ("data2017_CDEFUp")
+                process.PUScalingFactorProducer.targetDown = cms.string ("data2017_CDEFDown")
+            elif analysisChannel=="ee":
+                process.PUScalingFactorProducer.target = cms.string ("data2017")
+                process.PUScalingFactorProducer.targetUp = cms.string ("data2017Up")
+                process.PUScalingFactorProducer.targetDown = cms.string ("data2017Down")
+
 
 ################################################################################
 ##### Apply trigger scale factor ###############################################
@@ -42,9 +50,25 @@ def customize (process, applyPUReweighting = True, applyTriggerReweighting = Tru
 #FIXME: need to derive trigger scale factors for ee and mumu channels as well
 
         if applyTriggerReweighting:
-            if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
-                process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.9645)
+
+            if analysisChannel=="emu":
+                if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.965)
 #FIXME: need to update for 2017
-            elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
-                process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.9645)
+                elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.965)
+
+            if analysisChannel=="ee":
+                if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.962)
+#FIXME: need to update for 2017
+                elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(0.962)
+
+#FIXME: need to update for mumu channel, for 2016 and 2017
+            if analysisChannel=="mumu":
+                if os.environ["CMSSW_VERSION"].startswith ("CMSSW_8_0_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(1.0)
+                elif os.environ["CMSSW_VERSION"].startswith ("CMSSW_9_4_"):
+                    process.DisplacedSUSYEventVariableProducer.triggerScaleFactor = cms.double(1.0)
 

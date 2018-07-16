@@ -11,18 +11,22 @@ from DisplacedSUSY.EEChannel.Preselection import *
 eventSelections = [
     Preselection,
     #PromptControlRegion,
-    #AntiIsoPromptControlRegion,
     #DisplacedControlRegion,
-    #AntiIsoDisplacedControlRegion,
-    #ZControlRegion
+    #ZControlRegion,
+    #InclusiveSignalRegion,
+    #PreselectionLeptonsFromW,
     ]
+
+# Redefine scalingfactorproducers to not include muon scale factors
+scalingfactorproducers = []
+scalingfactorproducers.append(ElectronScaleFactorProducer)
 
 ################################################################################
 ##### Attach the channels and histograms to the process ########################
 ################################################################################
 
-add_channels (process, eventSelections, histograms, weights, scalingfactorproducers, collectionMap, variableProducers, True)
+add_channels (process, eventSelections, histograms, weights, scalingfactorproducers, collectionMap, variableProducers)
 
 # customize the process:
-# usage: customize(process, applyPUReweighting = True, applyTriggerReweighting = True) 
-customize (process, True, True, "data")
+# usage: customize(process, analysisChannel = "ee", applyPUReweighting = True, applyTriggerReweighting = True)
+customize (process, "ee", True, True, "data")
