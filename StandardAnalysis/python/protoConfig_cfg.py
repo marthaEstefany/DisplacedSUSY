@@ -34,23 +34,42 @@ process.MessageLogger.cerr.osu_GenMatchable = cms.untracked.PSet(
 if os.environ["CMSSW_VERSION"].startswith("CMSSW_8_0_"):
     process.source = cms.Source ('PoolSource',
       fileNames = cms.untracked.vstring (
+            #input MINIAOD files
             #'/store/data/Run2016G/MuonEG/MINIAOD/07Aug17-v1/10000/04360562-9C92-E711-A8A3-4C79BA180B5D.root'
             #'/store/data/Run2016G/DoubleEG/MINIAOD/07Aug17-v1/00000/1EF72C1E-DFB3-E711-A459-0242AC110005.root'
             #'/store/data/Run2016G/DoubleMuon/MINIAOD/07Aug17-v1/10000/00448C94-C19A-E711-BC4C-A4BF01125660.root'
             '/store/mc/RunIISummer16MiniAODv2/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/04F61242-90BA-E611-B842-001E67DFF7CB.root'
+
+            #initial skim files
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EMuInitialSkim_2016Analysis_11July2018/MuonEG_2016G/EMuSkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EMuInitialSkim_2016Analysis_11July2018/DYJetsToLL_50/EMuSkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EEInitialSkim_2016Analysis_17July2018/DoubleEG_2016G/EESkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EEInitialSkim_2016Analysis_17July2018/DYJetsToLL_50/EESkim/skim_0.root'
       )
     )
 elif os.environ["CMSSW_VERSION"].startswith("CMSSW_9_4_"):
     process.source = cms.Source ('PoolSource',
       fileNames = cms.untracked.vstring (
-            '/store/data/Run2017D/MuonEG/MINIAOD/31Mar2018-v1/100000/CC4BAF57-C437-E811-81E1-B496910A9A9C.root'
+            #input MINIAOD files
+            #'/store/data/Run2017D/MuonEG/MINIAOD/31Mar2018-v1/100000/CC4BAF57-C437-E811-81E1-B496910A9A9C.root'
             #'/store/data/Run2017D/DoubleMuon/MINIAOD/31Mar2018-v1/100000/00915A1A-C937-E811-B03A-009C02AAB484.root'
             #'/store/data/Run2017D/DoubleEG/MINIAOD/31Mar2018-v1/00000/002F7CD1-9D37-E811-A03E-B499BAABCF1A.root'
             #'/store/mc/RunIIFall17MiniAODv2/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/10000/143D9394-AF60-E811-96DC-0025904C641E.root'
+
+            #initial skim files
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EMuInitialSkim_2017Analysis_11July2018/MuonEG_2017C/EMuSkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EMuInitialSkim_2017Analysis_11July2018/DYJetsToLL_50/EMuSkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EEInitialSkim_2017Analysis_19July2018/DoubleEG_2017D/EESkim/skim_0.root'
+            #'file:/eos/uscms/store/user/lpclonglived/DisplacedLeptons/EEInitialSkim_2017Analysis_19July2018/DYJetsToLL_50/EESkim/skim_0.root'
+
+            'file:/uscms_data/d3/alimena/DisplacedLeptons/CMSSW_9_4_8/src/DisplacedSUSY/StandardAnalysis/python/MINIAODSIM_stopToLD_M_1000_1mm.root'
       )
     )
 else:
     print "What CMSSW release are you in? We expect to be in 80X or 94X"
+
+#drop collections that we don't need, and only screw things up
+process.source.inputCommands = cms.untracked.vstring(["keep *", "drop osu*_*_originalFormat_*"])
 
 # output histogram file name when running interactively
 process.TFileService = cms.Service ('TFileService',
@@ -114,7 +133,7 @@ from DisplacedSUSY.StandardAnalysis.EventWeights import *
 
 from DisplacedSUSY.StandardAnalysis.LeptonScaleFactors import *
 
-# These will look for framework object producers, meaning if you don't apply any 
+# These will look for framework object producers, meaning if you don't apply any
 # cuts on say electrons it will throw a product-not-found error for osu::electrons
 # Meaning, only use these if they make sense to use
 scalingfactorproducers = []

@@ -18,6 +18,8 @@ muon_pt_30_cut.numberRequired = cms.string(">= 2")
 
 muon_pt_40_cut.numberRequired = cms.string(">= 2")
 
+muon_pt_50_cut.numberRequired = cms.string(">= 2")
+
 muon_pt_70_cut.numberRequired = cms.string(">= 2")
 
 muon_global_cut.numberRequired = cms.string(">= 2")
@@ -34,6 +36,9 @@ muon_antiiso_cut.alias = cms.string(">=2 muons with inverted tight isolation")
 
 muon_d0_lessThan10_cut.numberRequired = cms.string(">= 2")
 muon_d0_lessThan10_cut.alias = cms.string(">=2 muons with |d_0| < 10 mum")
+
+muon_d0_lessThan50_cut.numberRequired = cms.string(">= 2")
+muon_d0_lessThan50_cut.alias = cms.string(">=2 muons with |d_0| < 50 mum")
 
 muon_d0_lessThan100_cut.numberRequired = cms.string(">= 2")
 muon_d0_lessThan100_cut.alias = cms.string(">=2 muons with |d_0| < 100 mum")

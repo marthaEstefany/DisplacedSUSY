@@ -13,6 +13,7 @@ electron_eta_cut.numberRequired = cms.string(">= 2")
 electron_gap_veto.numberRequired = cms.string(">= 2")
 electron_gap_veto.alias = cms.string(">=2 electrons surviving ECAL crack veto")
 
+electron_pt_75_cut.numberRequired = cms.string(">= 2")
 electron_pt_65_cut.numberRequired = cms.string(">= 2")
 electron_pt_42_cut.numberRequired = cms.string(">= 2")
 electron_pt_30_cut.numberRequired = cms.string(">= 2")
@@ -23,6 +24,9 @@ electron_id_cut.alias = cms.string(">=2 electrons with versioned tight ID and is
 
 electron_d0_lessThan10_cut.numberRequired = cms.string(">= 2")
 electron_d0_lessThan10_cut.alias = cms.string(">=2 electrons with |d_0| < 10 mum")
+
+electron_d0_lessThan50_cut.numberRequired = cms.string(">= 2")
+electron_d0_lessThan50_cut.alias = cms.string(">=2 electrons with |d_0| < 50 mum")
 
 electron_d0_lessThan100_cut.numberRequired = cms.string(">= 2")
 electron_d0_lessThan100_cut.alias = cms.string(">=2 electrons with |d_0| < 100 mum")

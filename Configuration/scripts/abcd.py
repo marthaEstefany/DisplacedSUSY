@@ -14,7 +14,7 @@ parser.add_option("-w", "--workDirectory", dest="condorDir",
                   help="condor working directory")
 parser.add_option("-c", "--doClosureTest", action="store_true", dest="doClosureTest",
                   default=False, help="perform closure test; DON'T RUN OVER DATA IF BLINDED!")
-parser.add_option("-t", "--makeTable", action="store_true", dest="makeTable",
+parser.add_option("-t", "--makeTables", action="store_true", dest="makeTables",
                   default=False, help="print table of abcd and counting yields; table is formatted for elog; must be used with '-c'")
 
 (arguments, args) = parser.parse_args()
@@ -41,7 +41,7 @@ gStyle.SetPadBorderMode(0)
 gStyle.SetPadColor(0)
 gStyle.SetCanvasColor(0)
 gStyle.SetTextFont(42)
-gStyle.SetPaintTextFormat('1.1f')
+gStyle.SetPaintTextFormat('1.1e')
 gROOT.ForceStyle()
 
 
@@ -49,11 +49,10 @@ def get_yields_and_errors(h, x_bin_lo, x_bin_hi, y_bin_lo, y_bin_hi, variable_bi
     error = Double(0.0)
     integral = h.IntegralAndError(x_bin_lo, x_bin_hi, y_bin_lo, y_bin_hi, error)
     # multiply by area of last bin if histogram was made with variable-width bins
-    # assume input histograms have symmetric binning 
+    # assume input histograms have symmetric binning
     if variable_bins:
         nBins = h.GetXaxis().GetNbins()
-        lastBin = h.GetXaxis().FindBin(nBins)
-        area = h.GetXaxis().GetBinWidth(lastBin) ** 2
+        area = h.GetXaxis().GetBinWidth(nBins) ** 2
         integral *= area
         error *= area
     return (integral, error)
@@ -77,11 +76,11 @@ prompt_bin_y_hi = in_hist.GetYaxis().FindBin(bins_y[1])-1
 
 (prompt_yield, prompt_error) = get_yields_and_errors(in_hist, prompt_bin_x_lo, prompt_bin_x_hi,
                                                      prompt_bin_y_lo, prompt_bin_y_hi, variable_bins)
-if arguments.makeTable:
+
+if arguments.makeTables:
     print "[B]", title(""), "[/B]"
     print '[TABLE border="1"]'
-    print "mu d0 range (cm)|e d0 range (cm)|A|B|C|D Estimate|D Actual"
-
+    print "mu d0 range (#mum)|e d0 range (#mum)|A|B|C|D Estimate|D Actual"
 
 for x_lo, x_hi in zip(bins_x[:-1], bins_x[1:]):
     x_bin_lo = in_hist.GetXaxis().FindBin(x_lo)
@@ -128,16 +127,46 @@ for x_lo, x_hi in zip(bins_x[:-1], bins_x[1:]):
                     print "Total error is 0 while yields are > 0. Something is wrong with your input histogram"
             comp_hist.SetBinContent(out_bin, consistency)
 
-            if arguments.makeTable:
-                if x_lo != 0 and y_lo != 0:
-                    print "|-"
-                    print "{:.3f} - {:.3f} | {:.3f} - {:.3f} | {}+-{} | {}+-{} | {}+-{} | {}+-{} | {}+-{}".format(
-                        x_lo, x_hi, y_lo, y_hi, round(prompt_yield,2), round(prompt_error,2),
-                        round(x_yield,2), round(x_error,2), round(y_yield,2), round(y_error,2),
-                        round(abcd_yield,2), round(abcd_error,2), round(count_yield,2), round(count_error,2) )
+            if arguments.makeTables:
+                format_string = "{:d}-{:d} | {:d}-{:d}" + 5 * " | {:.1e}+-{:.1e}"
+                print "|-"
+                print format_string.format( x_lo, x_hi, y_lo, y_hi, prompt_yield, prompt_error,
+                                           x_yield, x_error, y_yield, y_error, abcd_yield,
+                                           abcd_error, count_yield, count_error)
 
-if arguments.makeTable:
+if arguments.makeTables:
     print "[/TABLE]"
+
+    # Get yield and error in inclusive signal regions
+    abcd_yields_and_errors  = []
+    count_yields_and_errors = []
+    last_x_bin = abcd_hist.GetXaxis().FindBin(bins_x[-1])
+    last_y_bin = abcd_hist.GetYaxis().FindBin(bins_y[-1])
+    for x, y in zip(bins_x[1:], bins_y[1:]):
+        x_bin = abcd_hist.GetXaxis().FindBin(x)
+        y_bin = abcd_hist.GetYaxis().FindBin(y)
+        abcd_yields_and_errors.append(get_yields_and_errors(abcd_hist, x_bin, last_x_bin,
+                                                            y_bin, last_y_bin, False))
+        count_yields_and_errors.append(get_yields_and_errors(count_hist, x_bin, last_x_bin,
+                                                            y_bin, last_y_bin, False))
+
+    # subtract each yield from more inclusive yield to create non-overlapping regions
+    abcd_yields_and_errors  = [ propagateError("sum", y1, e1, -1*y2, e2) for (y1,e1), (y2,e2) in
+                              zip(abcd_yields_and_errors[:-1], abcd_yields_and_errors[1:]) ]
+    count_yields_and_errors = [ propagateError("sum", y1, e1, -1*y2, e2) for (y1,e1), (y2,e2) in
+                              zip(count_yields_and_errors[:-1], count_yields_and_errors[1:]) ]
+
+
+    # print summary table
+    print '[TABLE border="1"]'
+    print "Signal Region|Estimate|Actual"
+    for region, (abcd_yield, abcd_error), (count_yield, count_error) in zip(
+        range(1, len(abcd_yields_and_errors)+1), abcd_yields_and_errors, count_yields_and_errors):
+        print "|-"
+        print "Region {} | {:.1e}+-{:.1e} | {:.1e}+-{:.1e}".format(
+            region, abcd_yield, abcd_error, count_yield, count_error)
+    print "[/TABLE]"
+
 
 out_file = TFile(output_path + output_file, "recreate")
 
